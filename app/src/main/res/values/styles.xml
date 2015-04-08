@@ -4,6 +4,7 @@
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
         <!-- Main theme colors -->
         <!-- Your app branding color for the app bar -->
+        <item name="colorPrimary">@color/primary</item>
         <item name="android:colorPrimary">@color/primary</item>
         <!-- Darker variant for the status bar and contextual app bars -->
         <item name="android:colorPrimaryDark">@color/primary_dark</item>
