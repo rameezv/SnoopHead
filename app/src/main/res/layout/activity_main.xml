@@ -37,14 +37,9 @@
         android:layout_height="1dp"
         android:background="@android:color/darker_gray" />
 
-    <LinearLayout
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"></LinearLayout>
-
     <ListView
             android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="fill_parent"
             android:id="@+id/listSettings"
             android:layout_weight="1" />
 

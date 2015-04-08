@@ -20,8 +20,8 @@ import android.widget.Switch;
 
 
 public class MainActivity extends ActionBarActivity {
-    private Switch switchActive;
-    private ListView listSettings;
+    Switch switchActive;
+    ListView listSettings;
     SharedPreferences sharedpreferences;
     public static final String PREFS = "com.rammyapps.snoophead.prefs";
     public static final String cHEAD = "com.rammyapps.snoophead.prefs.head";
@@ -44,7 +44,7 @@ public class MainActivity extends ActionBarActivity {
         if (!sharedpreferences.contains(cTIME)) {
             editor.putString(cTIME, "1620");
         }
-        editor.commit();
+        editor.apply();
 
         switchActive = (Switch)findViewById(R.id.switchActive);
         switchActive.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -66,7 +66,7 @@ public class MainActivity extends ActionBarActivity {
                 "Sound",
                 "Time"
         };
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
                 android.R.layout.simple_list_item_1, android.R.id.text1, settingsValues);
         listSettings.setAdapter(adapter);
         listSettings.setOnItemClickListener(new AdapterView.OnItemClickListener() {

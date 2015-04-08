@@ -6,13 +6,14 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="New Text"
+        android:text="ItemText"
         android:id="@+id/headSelectorText"
         android:layout_weight="7"/>
     <ImageView
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:id="@+id/headSelectorImage"
-    android:layout_weight="3"/>
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/headSelectorImage"
+        android:layout_weight="3"
+        android:contentDescription="Head Selection Image" />
 
 </LinearLayout>

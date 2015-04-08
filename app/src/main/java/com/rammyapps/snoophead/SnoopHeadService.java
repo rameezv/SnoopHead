@@ -16,9 +16,6 @@ import android.widget.ImageView;
 
 import java.io.IOException;
 
-/**
- * Created by Rameez on 2015-04-07.
- */
 public class SnoopHeadService extends Service {
 
     private WindowManager windowManager;
@@ -28,7 +25,7 @@ public class SnoopHeadService extends Service {
     public static final String PREFS = "com.rammyapps.snoophead.prefs";
     public static final String cHEAD = "com.rammyapps.snoophead.prefs.head";
     public static final String cSOUND = "com.rammyapps.snoophead.prefs.sound";
-    public static final String cTIME = "com.rammyapps.snoophead.prefs.time";
+    //public static final String cTIME = "com.rammyapps.snoophead.prefs.time";
 
     @Override public IBinder onBind(Intent intent) {
         // Not used
@@ -54,7 +51,7 @@ public class SnoopHeadService extends Service {
                 WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
                 PixelFormat.TRANSLUCENT);
 
-        params.gravity = Gravity.TOP | Gravity.LEFT;
+        params.gravity = Gravity.TOP | Gravity.CENTER_HORIZONTAL;
         params.x = 0;
         params.y = 100;
 
