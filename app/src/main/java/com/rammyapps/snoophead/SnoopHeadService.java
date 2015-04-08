@@ -2,13 +2,17 @@ package com.rammyapps.snoophead;
 
 import android.app.Service;
 import android.content.Intent;
+import android.content.res.AssetFileDescriptor;
 import android.graphics.PixelFormat;
+import android.media.MediaPlayer;
 import android.os.IBinder;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageView;
+
+import java.io.IOException;
 
 /**
  * Created by Rameez on 2015-04-07.
@@ -28,6 +32,8 @@ public class SnoopHeadService extends Service {
         super.onCreate();
 
         windowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
+
+        final MediaPlayer mp = new MediaPlayer();
 
         chatHead = new ImageView(this);
         chatHead.setImageResource(R.drawable.head_snoop_default);
@@ -62,7 +68,26 @@ public class SnoopHeadService extends Service {
                         return true;
                     case MotionEvent.ACTION_UP:
                         // swed
-                        return true;
+                        if(mp.isPlaying())
+                        {
+                            mp.stop();
+                        }
+
+                        try {
+                            mp.reset();
+                            AssetFileDescriptor afd;
+                            afd = getAssets().openFd("swed_default.mp3");
+                            mp.setDataSource(afd.getFileDescriptor(),afd.getStartOffset(),afd.getLength());
+                            mp.prepare();
+                            mp.start();
+                            return true;
+                        } catch (IllegalStateException e) {
+                            e.printStackTrace();
+                            return false;
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                            return false;
+                        }
                     case MotionEvent.ACTION_MOVE:
                         params.x = initialX + (int) (event.getRawX() - initialTouchX);
                         params.y = initialY + (int) (event.getRawY() - initialTouchY);

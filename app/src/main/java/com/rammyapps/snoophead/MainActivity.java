@@ -23,8 +23,8 @@ public class MainActivity extends ActionBarActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, SnoopHeadService.class);
-                intent.putExtra("title", "Hello");
-                intent.putExtra("text", "ChatHead");
+                intent.putExtra("head", "snoop");
+                intent.putExtra("sound", "swed");
                 startService(intent);
                 //Toast.makeText(MainActivity.this, "Toast1", Toast.LENGTH_LONG).show();
             }
