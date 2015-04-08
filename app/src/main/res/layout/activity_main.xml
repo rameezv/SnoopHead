@@ -1,26 +1,54 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
     android:orientation="vertical"
-    android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
-    android:paddingBottom="@dimen/activity_vertical_margin" tools:context=".MainActivity"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity"
     android:weightSum="1"
-    android:theme="@android:style/Theme.Material">
-
-    <Button
-        android:layout_width="wrap_content"
+    android:theme="@android:style/Theme.Material"
+    android:id="@+id/mainLL"
+    android:padding="0dp">
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Start"
-        android:id="@+id/btnStart"
-        android:layout_gravity="center_horizontal"
-        android:theme="@android:style/Theme.Material" />
+        android:padding="20dp"
+        android:id="@+id/sRow1"
+        android:gravity="center_vertical">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Turn On SnoopHead"
+            android:id="@+id/textView"
+            android:layout_weight="8"
+            android:textSize="20sp"
+            android:textColor="@color/primary"
+            android:textStyle="bold" />
+        <Switch
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/switchActive"
+            android:layout_weight="2"
+            android:showText="false"
+            android:singleLine="false"
+            android:theme="@android:style/Theme.Material.Light" />
+        </LinearLayout>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@android:color/darker_gray" />
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Kill"
-        android:id="@+id/btnKill"
-        android:layout_gravity="center_horizontal"
-        android:theme="@android:style/Theme.Material" />
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"></LinearLayout>
+
+    <ListView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/listSettings"
+            android:layout_weight="1" />
+
+
+
+
 </LinearLayout>

@@ -1,7 +1,9 @@
 package com.rammyapps.snoophead;
 
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.AssetFileDescriptor;
 import android.graphics.PixelFormat;
 import android.media.MediaPlayer;
@@ -22,6 +24,11 @@ public class SnoopHeadService extends Service {
     private WindowManager windowManager;
     private ImageView chatHead;
     WindowManager.LayoutParams params;
+    SharedPreferences sharedpreferences;
+    public static final String PREFS = "com.rammyapps.snoophead.prefs";
+    public static final String cHEAD = "com.rammyapps.snoophead.prefs.head";
+    public static final String cSOUND = "com.rammyapps.snoophead.prefs.sound";
+    public static final String cTIME = "com.rammyapps.snoophead.prefs.time";
 
     @Override public IBinder onBind(Intent intent) {
         // Not used
@@ -31,12 +38,14 @@ public class SnoopHeadService extends Service {
     @Override public void onCreate() {
         super.onCreate();
 
+        sharedpreferences = getSharedPreferences(PREFS, Context.MODE_PRIVATE);
+
         windowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
 
         final MediaPlayer mp = new MediaPlayer();
 
         chatHead = new ImageView(this);
-        chatHead.setImageResource(R.drawable.head_snoop_default);
+        chatHead.setImageResource(sharedpreferences.getInt(cHEAD, R.drawable.head_snoop_default));
 
         params = new WindowManager.LayoutParams(
                 WindowManager.LayoutParams.WRAP_CONTENT,
@@ -76,7 +85,7 @@ public class SnoopHeadService extends Service {
                         try {
                             mp.reset();
                             AssetFileDescriptor afd;
-                            afd = getAssets().openFd("swed_default.mp3");
+                            afd = getAssets().openFd(sharedpreferences.getString(cSOUND, "swed_default.mp3"));
                             mp.setDataSource(afd.getFileDescriptor(),afd.getStartOffset(),afd.getLength());
                             mp.prepare();
                             mp.start();
