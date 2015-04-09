@@ -77,7 +77,7 @@ public class MainActivity extends ActionBarActivity {
                                     int position, long id) {
                 switch(position) {
                     case 0:
-                        String heads[] = new String[] {"Snoop 1", "Snoop 2", "Seth"};
+                        String heads[] = new String[] {"Snoop Dogg 1", "Snoop Dogg 2", "Seth Rogen"};
 
                         AlertDialog.Builder builderHeads = new AlertDialog.Builder(MainActivity.this);
                         builderHeads.setTitle("Choose a Head");
@@ -108,14 +108,25 @@ public class MainActivity extends ActionBarActivity {
                         builderHeads.show();
                         break;
                     case 1:
-                        String sounds[] = new String[] {"SWED", "Seth's laugh"};
+                        String sounds[] = new String[] {"Smoke Weed Every Day", "Seth Rogen's Laugh"};
 
                         AlertDialog.Builder builderSounds = new AlertDialog.Builder(MainActivity.this);
                         builderSounds.setTitle("Choose a Sound");
                         builderSounds.setItems(sounds, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                // the user clicked on sounds[which]
+                                switch(which) {
+                                    case 0:
+                                        editor.putString(cSOUND, "swed_default.mp3");
+                                        break;
+                                    case 1:
+                                        editor.putString(cSOUND, "seth_laugh.mp3");
+                                        break;
+                                    default:
+                                        editor.putString(cSOUND, "swed_default.mp3");
+                                        //dance
+                                }
+                                editor.apply();
                             }
                         });
                         builderSounds.show();
