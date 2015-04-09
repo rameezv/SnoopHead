@@ -26,6 +26,7 @@ public class SnoopHeadService extends Service {
     public static final String cHEAD = "com.rammyapps.snoophead.prefs.head";
     public static final String cSOUND = "com.rammyapps.snoophead.prefs.sound";
     //public static final String cTIME = "com.rammyapps.snoophead.prefs.time";
+    MediaPlayer mp = new MediaPlayer();
 
     @Override public IBinder onBind(Intent intent) {
         // Not used
@@ -39,7 +40,7 @@ public class SnoopHeadService extends Service {
 
         windowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
 
-        final MediaPlayer mp = new MediaPlayer();
+        mp = new MediaPlayer();
 
         chatHead = new ImageView(this);
         chatHead.setImageResource(sharedpreferences.getInt(cHEAD, R.drawable.head_snoop_default));
@@ -74,26 +75,7 @@ public class SnoopHeadService extends Service {
                         return true;
                     case MotionEvent.ACTION_UP:
                         // swed
-                        if(mp.isPlaying())
-                        {
-                            mp.stop();
-                        }
-
-                        try {
-                            mp.reset();
-                            AssetFileDescriptor afd;
-                            afd = getAssets().openFd(sharedpreferences.getString(cSOUND, "swed_default.mp3"));
-                            mp.setDataSource(afd.getFileDescriptor(),afd.getStartOffset(),afd.getLength());
-                            mp.prepare();
-                            mp.start();
-                            return true;
-                        } catch (IllegalStateException e) {
-                            e.printStackTrace();
-                            return false;
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                            return false;
-                        }
+                        return playMedia();
                     case MotionEvent.ACTION_MOVE:
                         params.x = initialX + (int) (event.getRawX() - initialTouchX);
                         params.y = initialY + (int) (event.getRawY() - initialTouchY);
@@ -103,11 +85,38 @@ public class SnoopHeadService extends Service {
                 return false;
             }
         });
+
+        if(playMedia()) {
+            // dance
+        }
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
         if (chatHead != null) windowManager.removeView(chatHead);
+    }
+
+    private boolean playMedia() {
+        if(mp.isPlaying())
+        {
+            mp.stop();
+        }
+
+        try {
+            mp.reset();
+            AssetFileDescriptor afd;
+            afd = getAssets().openFd(sharedpreferences.getString(cSOUND, "swed_default.mp3"));
+            mp.setDataSource(afd.getFileDescriptor(),afd.getStartOffset(),afd.getLength());
+            mp.prepare();
+            mp.start();
+            return true;
+        } catch (IllegalStateException e) {
+            e.printStackTrace();
+            return false;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 }
