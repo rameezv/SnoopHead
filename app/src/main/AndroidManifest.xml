@@ -24,7 +24,8 @@
 
         <activity
             android:name=".DonateActivity"
-            android:label="@string/title_activity_donate" >
+            android:label="@string/title_activity_donate"
+            android:parentActivityName=".MainActivity">
         </activity>
     </application>
 

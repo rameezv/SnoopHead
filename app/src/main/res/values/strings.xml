@@ -2,7 +2,7 @@
 <resources>
 
     <string name="app_name">SnoopHead</string>
-    <string name="action_donate">Donate</string>
-    <string name="title_activity_donate">Donate</string>
+    <string name="action_donate">Donate/Share</string>
+    <string name="title_activity_donate">Donate and Share</string>
 
 </resources>

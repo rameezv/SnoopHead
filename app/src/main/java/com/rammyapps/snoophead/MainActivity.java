@@ -181,7 +181,8 @@ public class MainActivity extends ActionBarActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_donate) {
-            return true;
+            Intent intent = new Intent(this, DonateActivity.class);
+            startActivity(intent);
         }
 
         return super.onOptionsItemSelected(item);
