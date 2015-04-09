@@ -23,6 +23,7 @@ public class MainActivity extends ActionBarActivity {
     Switch switchActive;
     ListView listSettings;
     SharedPreferences sharedpreferences;
+    SharedPreferences.Editor editor;
     public static final String PREFS = "com.rammyapps.snoophead.prefs";
     public static final String cHEAD = "com.rammyapps.snoophead.prefs.head";
     public static final String cSOUND = "com.rammyapps.snoophead.prefs.sound";
@@ -34,7 +35,7 @@ public class MainActivity extends ActionBarActivity {
         setContentView(R.layout.activity_main);
 
         sharedpreferences = getSharedPreferences(PREFS, Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedpreferences.edit();
+        editor = sharedpreferences.edit();
         if (!sharedpreferences.contains(cHEAD)) {
             editor.putInt(cHEAD, R.drawable.head_snoop_default);
         }
@@ -86,7 +87,21 @@ public class MainActivity extends ActionBarActivity {
                         builderHeads.setItems(heads, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                // the user clicked on heads[which]
+                                switch(which) {
+                                    case 0:
+                                        editor.putInt(cHEAD, R.drawable.head_snoop_default);
+                                        break;
+                                    case 1:
+                                        editor.putInt(cHEAD, R.drawable.head_snoop_toque);
+                                        break;
+                                    case 2:
+                                        editor.putInt(cHEAD, R.drawable.head_seth);
+                                        break;
+                                    default:
+                                        editor.putInt(cHEAD, R.drawable.head_snoop_default);
+                                        //dance
+                                }
+                                editor.apply();
                             }
                         });
 
