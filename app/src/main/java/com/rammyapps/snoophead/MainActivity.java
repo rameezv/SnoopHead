@@ -224,7 +224,7 @@ public class MainActivity extends ActionBarActivity {
         ArrayList<HashMap<String,String>> listItems = new ArrayList<>();
         HashMap<String,String> item;
         for(int i=0;i<settingsValues.length;i++){
-            item = new HashMap<String,String>();
+            item = new HashMap<>();
             item.put( "line1", settingsValues[i][0]);
             item.put( "line2", settingsValues[i][1]);
             listItems.add( item );
@@ -291,7 +291,7 @@ public class MainActivity extends ActionBarActivity {
 
             Head hd = (Head)getItem(position);
             if ( hd == null ) {
-                // wat
+                return null;
             }
             holder.nameTxVw.setText( hd.getName() );
             holder.imageImVw.setImageResource( hd.getImg() );
