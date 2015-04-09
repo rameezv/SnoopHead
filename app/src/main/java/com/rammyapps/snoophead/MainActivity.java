@@ -12,12 +12,16 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.CompoundButton;
+import android.widget.ImageView;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.Switch;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -76,14 +80,17 @@ public class MainActivity extends ActionBarActivity {
                                     int position, long id) {
                 switch(position) {
                     case 0:
-                        String heads[] = new String[] {"Snoop Dogg 1", "Snoop Dogg 2", "Seth Rogen"};
+                        Head heads[] = new Head[] {
+                                new Head("Snoop Dogg 1", R.drawable.head_snoop_default),
+                                new Head("Snoop Dogg 2", R.drawable.head_snoop_toque),
+                                new Head("Seth Rogen", R.drawable.head_seth)
+                        };
 
                         AlertDialog.Builder builderHeads = new AlertDialog.Builder(MainActivity.this);
                         builderHeads.setTitle("Choose a Head");
-                        LayoutInflater factory = LayoutInflater.from(MainActivity.this);
-                        final View headSelectorView = factory.inflate(R.layout.head_selector_item, null);
-                        //builderHeads.setView(headSelectorView);
-                        builderHeads.setItems(heads, new DialogInterface.OnClickListener() {
+                        ListAdapter adapter = new HeadAdapter(MainActivity.this, heads);
+
+                        builderHeads.setSingleChoiceItems(adapter, -1, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 switch(which) {
@@ -103,6 +110,7 @@ public class MainActivity extends ActionBarActivity {
                                 editor.apply();
                                 sa = setUpList();
                                 listSettings.setAdapter(sa);
+                                dialog.dismiss();
                             }
                         });
 
@@ -212,7 +220,7 @@ public class MainActivity extends ActionBarActivity {
             default:
                 settingsValues[1][1] = "Smoke Weed Every Day";
         }
-        ArrayList<HashMap<String,String>> listItems = new ArrayList<HashMap<String,String>>();
+        ArrayList<HashMap<String,String>> listItems = new ArrayList<>();
         HashMap<String,String> item;
         for(int i=0;i<settingsValues.length;i++){
             item = new HashMap<String,String>();
@@ -224,5 +232,70 @@ public class MainActivity extends ActionBarActivity {
                 R.layout.settings_list_item,
                 new String[] { "line1","line2" },
                 new int[] {R.id.list_item_line_1, R.id.list_item_line_2});
+    }
+
+    class Head {
+        String name;
+        int img;
+
+        public Head(String nm, int im) {
+            this.name = nm;
+            this.img = im;
+        }
+
+        public String getName() {
+            return this.name;
+        }
+
+        public int getImg() {
+            return this.img;
+        }
+    }
+
+    static class HeadAdapter extends ArrayAdapter {
+
+        private static final int RESOURCE = R.layout.head_selector_item;
+        private LayoutInflater inflater;
+
+        static class ViewHolder {
+            TextView nameTxVw;
+            ImageView imageImVw;
+        }
+
+        public HeadAdapter(Context context, Head[] objects)
+        {
+            super(context, RESOURCE, objects);
+            inflater = LayoutInflater.from(context);
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent)
+        {
+            ViewHolder holder;
+
+            if ( convertView == null ) {
+                // inflate a new view and setup the view holder for future use
+                convertView = inflater.inflate( RESOURCE, null );
+
+                holder = new ViewHolder();
+                holder.nameTxVw =
+                        (TextView) convertView.findViewById(R.id.headSelectorText);
+                holder.imageImVw =
+                        (ImageView) convertView.findViewById(R.id.headSelectorImage);
+                convertView.setTag( holder );
+            }  else {
+                // view already defined, retrieve view holder
+                holder = (ViewHolder) convertView.getTag();
+            }
+
+            Head hd = (Head)getItem(position);
+            if ( hd == null ) {
+                // wat
+            }
+            holder.nameTxVw.setText( hd.getName() );
+            holder.imageImVw.setImageResource( hd.getImg() );
+
+            return convertView;
+        }
     }
 }
