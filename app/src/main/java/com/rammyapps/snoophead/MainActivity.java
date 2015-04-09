@@ -23,7 +23,6 @@ import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.Switch;
 import android.widget.TextView;
-
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
@@ -31,7 +30,7 @@ import java.util.HashMap;
 
 
 public class MainActivity extends ActionBarActivity {
-    Switch switchActive;
+    public Switch switchActive;
     ListView listSettings;
     SharedPreferences sharedpreferences;
     SharedPreferences.Editor editor;
@@ -180,6 +179,12 @@ public class MainActivity extends ActionBarActivity {
 
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        sa = setUpList();
+        listSettings.setAdapter(sa);
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -226,8 +231,8 @@ public class MainActivity extends ActionBarActivity {
                 cal.add(Calendar.DAY_OF_YEAR, cur_cal.get(Calendar.DAY_OF_YEAR));
                 cal.set(Calendar.HOUR_OF_DAY, 16);
                 cal.set(Calendar.MINUTE, 20);
-                cal.set(Calendar.SECOND, cur_cal.get(Calendar.SECOND));
-                cal.set(Calendar.MILLISECOND, cur_cal.get(Calendar.MILLISECOND));
+                cal.set(Calendar.SECOND, 00);
+                cal.set(Calendar.MILLISECOND, 00);
                 cal.set(Calendar.DATE, cur_cal.get(Calendar.DATE));
                 cal.set(Calendar.MONTH, cur_cal.get(Calendar.MONTH));
                 Intent intent = new Intent(MainActivity.this, SnoopHeadService.class);
@@ -239,7 +244,7 @@ public class MainActivity extends ActionBarActivity {
 
     }
 
-      private SimpleAdapter setUpList() {
+    private SimpleAdapter setUpList() {
         switchActive.setChecked(sharedpreferences.getBoolean(cENABLED, false));
         String[][] settingsValues = {
                 {"Head","Snoop 1"},

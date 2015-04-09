@@ -7,6 +7,7 @@ import android.content.SharedPreferences;
 import android.content.res.AssetFileDescriptor;
 import android.graphics.PixelFormat;
 import android.media.MediaPlayer;
+import android.os.Handler;
 import android.os.IBinder;
 import android.view.Gravity;
 import android.view.MotionEvent;
@@ -20,12 +21,15 @@ public class SnoopHeadService extends Service {
 
     private WindowManager windowManager;
     private ImageView chatHead;
+    private ImageView cancelHead;
     WindowManager.LayoutParams params;
+    WindowManager.LayoutParams paramsCancel;
     SharedPreferences sharedpreferences;
     public static final String PREFS = "com.rammyapps.snoophead.prefs";
     public static final String cHEAD = "com.rammyapps.snoophead.prefs.head";
     public static final String cSOUND = "com.rammyapps.snoophead.prefs.sound";
-    //public static final String cTIME = "com.rammyapps.snoophead.prefs.time";
+    public static final String cENABLED = "com.rammyapps.snoophead.prefs.enabled";
+    public static final String cTIME = "com.rammyapps.snoophead.prefs.time";
     MediaPlayer mp = new MediaPlayer();
 
     @Override public IBinder onBind(Intent intent) {
@@ -58,6 +62,8 @@ public class SnoopHeadService extends Service {
 
         windowManager.addView(chatHead, params);
 
+        //
+
         chatHead.setOnTouchListener(new View.OnTouchListener() {
             private int initialX;
             private int initialY;
@@ -72,19 +78,71 @@ public class SnoopHeadService extends Service {
                         initialY = params.y;
                         initialTouchX = event.getRawX();
                         initialTouchY = event.getRawY();
+
+                        cancelHead = new ImageView(SnoopHeadService.this);
+                        cancelHead.setImageResource(R.drawable.button_close_normal);
+
+                        paramsCancel = new WindowManager.LayoutParams(
+                                WindowManager.LayoutParams.WRAP_CONTENT,
+                                WindowManager.LayoutParams.WRAP_CONTENT,
+                                WindowManager.LayoutParams.TYPE_PHONE,
+                                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
+                                PixelFormat.TRANSLUCENT);
+
+                        paramsCancel.gravity = Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL;
+                        paramsCancel.x = 0;
+                        paramsCancel.y = 100;
+
+                        windowManager.addView(cancelHead, paramsCancel);
+
                         return true;
                     case MotionEvent.ACTION_UP:
                         // swed
+                        int canLoc[] = new int[2];
+                        cancelHead.getLocationOnScreen(canLoc);
+                        if ((params.x > (cancelHead.getLeft()- 250)) && (params.x < (cancelHead.getLeft() + 250))) {
+                            if ((params.y > (canLoc[1] - 250)) && (params.y < (canLoc[1] + 250))) {
+                                if (sharedpreferences.getString(cTIME, "1620").equals("NULL")) {
+                                    SharedPreferences.Editor editor = sharedpreferences.edit();
+                                    editor.putBoolean(cENABLED, false);
+                                    editor.apply();
+                                }
+                                SnoopHeadService.this.stopSelf();
+                            }
+                        }
+                        windowManager.removeView(cancelHead);
                         return playMedia();
                     case MotionEvent.ACTION_MOVE:
                         params.x = initialX + (int) (event.getRawX() - initialTouchX);
                         params.y = initialY + (int) (event.getRawY() - initialTouchY);
+                        int canLoc2[] = new int[2];
+                        cancelHead.getLocationOnScreen(canLoc2);
+                        if ((params.x > (cancelHead.getLeft()- 250)) && (params.x < (cancelHead.getLeft() + 250))) {
+                            if ((params.y > (canLoc2[1] - 250)) && (params.y < (canLoc2[1] + 250))) {
+                                cancelHead.setImageResource(R.drawable.button_close_active);
+                            } else {
+                                cancelHead.setImageResource(R.drawable.button_close_normal);
+                            }
+                        } else {
+                            cancelHead.setImageResource(R.drawable.button_close_normal);
+                        }
+                        windowManager.updateViewLayout(cancelHead, paramsCancel);
                         windowManager.updateViewLayout(chatHead, params);
                         return true;
                 }
                 return false;
             }
         });
+
+        if (!sharedpreferences.getString(cTIME, "1620").equals("NULL")) {
+            final Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    SnoopHeadService.this.stopSelf();
+                }
+            }, 60000);
+        }
 
         if(playMedia()) {
             // dance
