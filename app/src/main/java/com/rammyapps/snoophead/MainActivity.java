@@ -16,7 +16,11 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.CompoundButton;
 import android.widget.ListView;
+import android.widget.SimpleAdapter;
 import android.widget.Switch;
+
+import java.util.ArrayList;
+import java.util.HashMap;
 
 
 public class MainActivity extends ActionBarActivity {
@@ -28,6 +32,7 @@ public class MainActivity extends ActionBarActivity {
     public static final String cHEAD = "com.rammyapps.snoophead.prefs.head";
     public static final String cSOUND = "com.rammyapps.snoophead.prefs.sound";
     public static final String cTIME = "com.rammyapps.snoophead.prefs.time";
+    private SimpleAdapter sa;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,14 +67,8 @@ public class MainActivity extends ActionBarActivity {
         switchActive.setChecked(isSnoopAlive(SnoopHeadService.class));
 
         listSettings = (ListView)findViewById(R.id.listSettings);
-        String[] settingsValues = new String[] {
-                "Head",
-                "Sound",
-                "Time"
-        };
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
-                android.R.layout.simple_list_item_1, android.R.id.text1, settingsValues);
-        listSettings.setAdapter(adapter);
+        sa = setUpList();
+        listSettings.setAdapter(sa);
         listSettings.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
             @Override
@@ -102,6 +101,8 @@ public class MainActivity extends ActionBarActivity {
                                         //dance
                                 }
                                 editor.apply();
+                                sa = setUpList();
+                                listSettings.setAdapter(sa);
                             }
                         });
 
@@ -127,6 +128,8 @@ public class MainActivity extends ActionBarActivity {
                                         //dance
                                 }
                                 editor.apply();
+                                sa = setUpList();
+                                listSettings.setAdapter(sa);
                             }
                         });
                         builderSounds.show();
@@ -184,5 +187,42 @@ public class MainActivity extends ActionBarActivity {
             }
         }
         return false;
+    }
+
+    private SimpleAdapter setUpList() {
+        String[][] settingsValues = {
+                {"Head","Snoop 1"},
+                {"Sound","Smoke Weed Every Day"},
+                {"Time","4:20"}
+        };
+        switch(sharedpreferences.getInt(cHEAD, R.drawable.head_snoop_default)) {
+            case R.drawable.head_snoop_toque:
+                settingsValues[0][1] = "Snoop Dogg 2";
+                break;
+            case R.drawable.head_seth:
+                settingsValues[0][1] = "Seth Rogen";
+                break;
+            default:
+                settingsValues[0][1] = "Snoop Dogg 1";
+        }
+        switch(sharedpreferences.getString(cSOUND, "swed_default.mp3")) {
+            case "seth_laugh.mp3":
+                settingsValues[1][1] = "Seth Rogen's Laugh";
+                break;
+            default:
+                settingsValues[1][1] = "Smoke Weed Every Day";
+        }
+        ArrayList<HashMap<String,String>> listItems = new ArrayList<HashMap<String,String>>();
+        HashMap<String,String> item;
+        for(int i=0;i<settingsValues.length;i++){
+            item = new HashMap<String,String>();
+            item.put( "line1", settingsValues[i][0]);
+            item.put( "line2", settingsValues[i][1]);
+            listItems.add( item );
+        }
+        return new SimpleAdapter(this, listItems,
+                R.layout.settings_list_item,
+                new String[] { "line1","line2" },
+                new int[] {R.id.list_item_line_1, R.id.list_item_line_2});
     }
 }
