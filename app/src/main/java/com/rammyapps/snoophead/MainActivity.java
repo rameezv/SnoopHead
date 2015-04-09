@@ -1,7 +1,8 @@
 package com.rammyapps.snoophead;
 
-import android.app.ActivityManager;
+import android.app.AlarmManager;
 import android.app.AlertDialog;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -24,6 +25,8 @@ import android.widget.Switch;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 
 
@@ -36,6 +39,7 @@ public class MainActivity extends ActionBarActivity {
     public static final String cHEAD = "com.rammyapps.snoophead.prefs.head";
     public static final String cSOUND = "com.rammyapps.snoophead.prefs.sound";
     public static final String cTIME = "com.rammyapps.snoophead.prefs.time";
+    public static final String cENABLED = "com.rammyapps.snoophead.prefs.enabled";
     private SimpleAdapter sa;
 
     @Override
@@ -54,21 +58,19 @@ public class MainActivity extends ActionBarActivity {
         if (!sharedpreferences.contains(cTIME)) {
             editor.putString(cTIME, "1620");
         }
+        if (!sharedpreferences.contains(cENABLED)) {
+            editor.putBoolean(cENABLED, false);
+        }
         editor.apply();
-
         switchActive = (Switch)findViewById(R.id.switchActive);
         switchActive.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if(isChecked) {
-                    Intent intent = new Intent(MainActivity.this, SnoopHeadService.class);
-                    startService(intent);
-                } else {
-                    stopService(new Intent(MainActivity.this, SnoopHeadService.class));
-                }
+                editor.putBoolean(cENABLED, isChecked);
+                editor.commit();
+                setServiceTime(sharedpreferences.getString(cTIME, "1620"));
             }
         });
 
-        switchActive.setChecked(isSnoopAlive(SnoopHeadService.class));
 
         listSettings = (ListView)findViewById(R.id.listSettings);
         sa = setUpList();
@@ -93,7 +95,7 @@ public class MainActivity extends ActionBarActivity {
                         builderHeads.setSingleChoiceItems(adapter, -1, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                switch(which) {
+                                switch (which) {
                                     case 0:
                                         editor.putInt(cHEAD, R.drawable.head_snoop_default);
                                         break;
@@ -142,15 +144,29 @@ public class MainActivity extends ActionBarActivity {
                         });
                         builderSounds.show();
                         break;
-                    case 3:
-                        String times[] = new String[] {"4:20", "Always"};
+                    case 2:
+                        String times[] = new String[] {"4:20 pm", "Always"};
 
                         AlertDialog.Builder builderTimes = new AlertDialog.Builder(MainActivity.this);
-                        builderTimes.setTitle("Choose a Sound");
+                        builderTimes.setTitle("Choose a Time");
                         builderTimes.setItems(times, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                // the user clicked on time[which]
+                                switch(which) {
+                                    case 0:
+                                        editor.putString(cTIME, "1620");
+                                        break;
+                                    case 1:
+                                        editor.putString(cTIME, "NULL");
+                                        break;
+                                    default:
+                                        editor.putString(cTIME, "1620");
+                                        //dance
+                                }
+                                editor.apply();
+                                sa = setUpList();
+                                listSettings.setAdapter(sa);
+                                setServiceTime(sharedpreferences.getString(cTIME, "1620"));
                             }
                         });
                         builderTimes.show();
@@ -188,17 +204,43 @@ public class MainActivity extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private boolean isSnoopAlive(Class<?> serviceClass) {
-        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
-        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
-            if (serviceClass.getName().equals(service.service.getClassName())) {
-                return true;
+    private void setServiceTime(String timeString) {
+        if (!sharedpreferences.getBoolean(cENABLED, false)) {
+            if (timeString.equals("NULL") || timeString.length() != 4) {
+                stopService(new Intent(MainActivity.this, SnoopHeadService.class));
+            } else {
+                Intent intent = new Intent(MainActivity.this, SnoopHeadService.class);
+                PendingIntent pintent = PendingIntent.getService(MainActivity.this, 0, intent, 0);
+                AlarmManager alarm = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
+                alarm.cancel(pintent);
+            }
+        } else {
+            if (timeString.equals("NULL") || timeString.length() != 4) {
+                Intent intent = new Intent(MainActivity.this, SnoopHeadService.class);
+                startService(intent);
+            } else {
+                Calendar cur_cal = new GregorianCalendar();
+                cur_cal.setTimeInMillis(System.currentTimeMillis());//set the current time and date for this calendar
+
+                Calendar cal = new GregorianCalendar();
+                cal.add(Calendar.DAY_OF_YEAR, cur_cal.get(Calendar.DAY_OF_YEAR));
+                cal.set(Calendar.HOUR_OF_DAY, 16);
+                cal.set(Calendar.MINUTE, 20);
+                cal.set(Calendar.SECOND, cur_cal.get(Calendar.SECOND));
+                cal.set(Calendar.MILLISECOND, cur_cal.get(Calendar.MILLISECOND));
+                cal.set(Calendar.DATE, cur_cal.get(Calendar.DATE));
+                cal.set(Calendar.MONTH, cur_cal.get(Calendar.MONTH));
+                Intent intent = new Intent(MainActivity.this, SnoopHeadService.class);
+                PendingIntent pintent = PendingIntent.getService(MainActivity.this, 0, intent, 0);
+                AlarmManager alarm = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
+                alarm.setRepeating(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(), 30*1000, pintent);
             }
         }
-        return false;
+
     }
 
-    private SimpleAdapter setUpList() {
+      private SimpleAdapter setUpList() {
+        switchActive.setChecked(sharedpreferences.getBoolean(cENABLED, false));
         String[][] settingsValues = {
                 {"Head","Snoop 1"},
                 {"Sound","Smoke Weed Every Day"},
@@ -220,6 +262,13 @@ public class MainActivity extends ActionBarActivity {
                 break;
             default:
                 settingsValues[1][1] = "Smoke Weed Every Day";
+        }
+        switch(sharedpreferences.getString(cTIME, "1620")) {
+            case "NULL":
+                settingsValues[2][1] = "Always";
+                break;
+            default:
+                settingsValues[2][1] = "4:20 pm";
         }
         ArrayList<HashMap<String,String>> listItems = new ArrayList<>();
         HashMap<String,String> item;
