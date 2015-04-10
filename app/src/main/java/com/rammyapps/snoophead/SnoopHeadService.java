@@ -156,8 +156,7 @@ public class SnoopHeadService extends Service {
     }
 
     private boolean playMedia() {
-        if(mp.isPlaying())
-        {
+        if(mp.isPlaying()) {
             mp.stop();
         }
 
